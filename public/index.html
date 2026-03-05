@@ -75,101 +75,88 @@
 
   <script>
     const v = document.getElementById('v');
-    const srcEl = document.getElementById('src');
-    const startBtn = document.getElementById('start');
-    const countEl = document.getElementById('count');
-    const nowEl = document.getElementById('now');
-    const mutedEl = document.getElementById('muted');
-    const errEl = document.getElementById('err');
+const srcEl = document.getElementById('src');
+const startBtn = document.getElementById('start');
+const countEl = document.getElementById('count');
+const nowEl = document.getElementById('now');
+const mutedEl = document.getElementById('muted');
+const errEl = document.getElementById('err');
 
-    let list = [];
-    let i = 0;
-    let started = false;
+let list = [];
+let i = 0;
 
-    function showErr(msg){
-      errEl.textContent = msg;
-      errEl.classList.add('show');
-      console.error(msg);
-    }
-    function clearErr(){
-      errEl.textContent = '';
-      errEl.classList.remove('show');
-    }
-    function label(path){
-      const p = String(path).split('/');
-      return p[p.length - 1] || path;
-    }
+function showErr(msg){
+  errEl.textContent = msg;
+  errEl.classList.add('show');
+  console.error(msg);
+}
 
-    async function loadPlaylist(){
-      const res = await fetch('/playlist.json', { cache: 'no-store' });
-      if (!res.ok) throw new Error(`playlist.json not found (HTTP ${res.status})`);
-      const data = await res.json();
-      if (!Array.isArray(data) || !data.length) throw new Error('playlist.json must be a non-empty JSON array.');
-      return data;
-    }
+function clearErr(){
+  errEl.textContent = '';
+  errEl.classList.remove('show');
+}
 
-    async function playIndex(idx, reason){
-      clearErr();
-      if (!list.length) return;
-      i = (idx + list.length) % list.length;
+function label(path){
+  const p = path.split('/');
+  return p[p.length - 1];
+}
 
-      const rel = list[i];
-      const url = rel.startsWith('/') ? rel : `/${rel}`;
+async function loadPlaylist(){
+  const res = await fetch('/playlist.json');
+  const data = await res.json();
+  return data;
+}
 
-      nowEl.textContent = label(rel);
+async function playIndex(idx){
+  clearErr();
 
-      // Hard reset source
-      v.pause();
-      srcEl.removeAttribute('src');
-      v.load();
+  i = idx % list.length;
 
-      srcEl.src = url;
-      v.load();
+  const rel = list[i];
+  const url = rel.startsWith('/') ? rel : '/' + rel;
 
-      try {
-        const p = v.play();
-        if (p && p.catch) await p;
-      } catch (e) {
-        showErr(`Play failed (${reason}): ${e.name} - ${e.message}`);
-      }
-    }
+  nowEl.textContent = label(rel);
 
-    v.addEventListener('ended', () => {
-      if (!started) return;
-      playIndex(i + 1, 'ended→next');
-    });
+  srcEl.src = url;
+  v.load();
 
-    v.addEventListener('error', () => {
-      const code = v.error?.code;
-      showErr(`Video error code=${code}. Source: ${srcEl.src || v.currentSrc || '(none)'}`);
-    });
+  try{
+    await v.play();
+  }catch(e){
+    showErr(`${e.name}: ${e.message}`);
+  }
+}
 
-    startBtn.addEventListener('click', async () => {
-      started = true;
+v.addEventListener('ended', () => {
+  playIndex(i + 1);
+});
 
-      // Click-to-play with audio should be allowed
-      v.muted = false;
-      mutedEl.textContent = String(v.muted);
+v.addEventListener('error', () => {
+  showErr("Video failed to load: " + srcEl.src);
+});
 
-      await playIndex(i, 'button');
-    });
+startBtn.addEventListener('click', () => {
+  v.muted = false;
+  mutedEl.textContent = String(v.muted);
+  playIndex(i);
+});
 
-    // Try muted autoplay on load (optional)
-    (async function init(){
-      try {
-        list = await loadPlaylist();
-        countEl.textContent = String(list.length);
+async function init(){
+  try{
+    list = await loadPlaylist();
+    countEl.textContent = list.length;
 
-        // preload first item, but don’t force audio
-        v.muted = true;
-        mutedEl.textContent = String(v.muted);
+    // preload first clip but do not autoplay
+    srcEl.src = "/" + list[0];
+    v.load();
 
-        await playIndex(0, 'init-muted');
-        // If autoplay is blocked, user clicks Start.
-      } catch (e) {
-        showErr(e.message || String(e));
-      }
-    })();
+  }catch(e){
+    showErr(e.message);
+  }
+}
+
+init();
+
   </script>
 </body>
 </html>
