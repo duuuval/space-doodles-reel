@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "public/videos/*.mp4"
+workflow_dispatch:
 
 jobs:
   build:
