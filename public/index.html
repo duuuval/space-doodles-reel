@@ -2,10 +2,10 @@
 <html>
 <body style="margin:0;background:black;display:flex;align-items:center;justify-content:center;height:100vh;">
 
-<div style="position:relative;width:900px">
+<div style="position:relative;width:900px;height:506px">
 
-<video id="v1" autoplay muted width="900" style="position:absolute"></video>
-<video id="v2" muted width="900" style="position:absolute"></video>
+<video id="v1" controls autoplay width="900" style="position:absolute;top:0;left:0"></video>
+<video id="v2" width="900" style="position:absolute;top:0;left:0;display:none"></video>
 
 </div>
 
@@ -16,39 +16,37 @@ const videos = [
 "/videos/5421.mp4"
 ];
 
-let i = 0;
+let index = 0;
 
 const v1 = document.getElementById("v1");
 const v2 = document.getElementById("v2");
 
-let active = v1;
-let preload = v2;
+let current = v1;
+let next = v2;
 
-active.src = videos[0];
-preload.src = videos[1];
+current.src = videos[0];
+next.src = videos[1];
 
-active.play();
+current.play();
 
-active.onended = switchVideo;
+current.onended = () => {
 
-function switchVideo(){
+  current.style.display = "none";
+  next.style.display = "block";
 
-  const temp = active;
-  active = preload;
-  preload = temp;
+  next.play();
 
-  active.style.zIndex = 1;
-  preload.style.zIndex = 0;
+  const temp = current;
+  current = next;
+  next = temp;
 
-  active.play();
+  index = (index + 1) % videos.length;
 
-  i = (i + 1) % videos.length;
+  const upcoming = videos[(index + 1) % videos.length];
 
-  const next = videos[(i + 1) % videos.length];
+  next.src = upcoming;
 
-  preload.src = next;
-
-}
+};
 
 </script>
 
