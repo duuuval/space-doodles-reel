@@ -2,9 +2,7 @@ name: Build Reel
 
 on:
   push:
-    paths:
-      - "public/videos/*.mp4"
-workflow_dispatch:
+  workflow_dispatch:
 
 jobs:
   build:
