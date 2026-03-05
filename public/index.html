@@ -4,376 +4,172 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Space Doodles Reel</title>
-  <meta name="description" content="A continuous reel of Space Doodles clips." />
 
   <style>
     :root{
-      /* Doodles-inspired bright candy colors (approx vibe) */
-      --pink: #FF4FD8;
-      --purple: #8B5CFF;
-      --blue: #2ED3FF;
-      --yellow:#FFE86B;
-      --mint: #2BFFB9;
-      --ink:  #0B0F1A;
-      --card: rgba(255,255,255,.10);
-      --line: rgba(255,255,255,.18);
-      --text: rgba(255,255,255,.92);
-      --muted: rgba(255,255,255,.70);
+      --pink:#FF4FD8; --purple:#8B5CFF; --blue:#2ED3FF; --yellow:#FFE86B; --mint:#2BFFB9;
+      --ink:#0B0F1A; --line:rgba(255,255,255,.18); --card:rgba(255,255,255,.10);
+      --text:rgba(255,255,255,.92); --muted:rgba(255,255,255,.70);
     }
-
-    *{ box-sizing:border-box; }
+    *{box-sizing:border-box}
     body{
-      margin:0;
+      margin:0; min-height:100vh; padding:18px;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color: var(--text);
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding: 22px;
+      color:var(--text);
       background:
         radial-gradient(900px 600px at 15% 15%, rgba(255,79,216,.35), transparent 60%),
         radial-gradient(900px 600px at 85% 20%, rgba(46,211,255,.35), transparent 60%),
         radial-gradient(900px 700px at 50% 95%, rgba(43,255,185,.28), transparent 62%),
         linear-gradient(180deg, #0b0f1a 0%, #090b12 100%);
-      overflow-x:hidden;
+      display:flex; align-items:center; justify-content:center;
     }
-
-    .wrap{
-      width: min(980px, 100%);
-      display:grid;
-      gap: 14px;
-    }
-
-    .topbar{
-      display:flex;
-      gap:12px;
-      align-items:center;
-      justify-content:space-between;
-    }
-
-    .brand{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      user-select:none;
-    }
-
-    .dot{
-      width: 14px;
-      height: 14px;
-      border-radius: 999px;
-      background: conic-gradient(from 180deg, var(--pink), var(--purple), var(--blue), var(--mint), var(--yellow), var(--pink));
-      box-shadow: 0 0 24px rgba(255,79,216,.25);
-    }
-
-    .brand h1{
-      margin:0;
-      font-size: 16px;
-      letter-spacing: .2px;
-      font-weight: 700;
-    }
-
-    .brand .sub{
-      margin:0;
-      font-size: 12px;
-      color: var(--muted);
-    }
-
+    .wrap{width:min(980px,100%); display:grid; gap:12px;}
+    .bar{display:flex; justify-content:space-between; align-items:center; gap:12px;}
+    .title{display:flex; align-items:center; gap:10px;}
+    .dot{width:14px;height:14px;border-radius:999px;background:conic-gradient(from 180deg,var(--pink),var(--purple),var(--blue),var(--mint),var(--yellow),var(--pink))}
     .card{
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      box-shadow: 0 18px 60px rgba(0,0,0,.35);
-      overflow:hidden;
-      backdrop-filter: blur(12px);
+      background:var(--card); border:1px solid var(--line);
+      border-radius:18px; overflow:hidden; backdrop-filter: blur(10px);
+      box-shadow:0 18px 60px rgba(0,0,0,.35);
     }
-
-    .player{
-      position:relative;
-      aspect-ratio: 16 / 9;
-      background: rgba(0,0,0,.35);
-    }
-
-    video{
-      width:100%;
-      height:100%;
-      display:block;
-      object-fit:contain;
-      background:#000;
-    }
-
-    .overlay{
-      position:absolute;
-      inset: 0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding: 18px;
-      text-align:center;
-      background: linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.25));
-    }
-
-    .overlay.hidden{ display:none; }
-
-    .cta{
-      max-width: 520px;
-      display:grid;
-      gap: 10px;
-    }
-
-    .cta h2{
-      margin:0;
-      font-size: 20px;
-      line-height:1.2;
-    }
-
-    .cta p{
-      margin:0;
-      color: var(--muted);
-      font-size: 14px;
-      line-height:1.35;
-    }
-
-    .btn{
-      border: 0;
-      cursor:pointer;
-      border-radius: 999px;
-      padding: 12px 16px;
-      font-weight: 800;
-      color: #0B0F1A;
+    .player{aspect-ratio:16/9; background:#000;}
+    video{width:100%;height:100%;display:block;object-fit:contain;background:#000;}
+    .footer{display:flex; gap:10px; flex-wrap:wrap; justify-content:space-between; padding:10px 12px;}
+    .pill{border:1px solid var(--line); background:rgba(255,255,255,.06); padding:7px 10px; border-radius:999px; font-size:12px; color:var(--muted);}
+    .pill b{color:var(--text)}
+    .err{display:none; padding:10px 12px; border-top:1px solid var(--line); background:rgba(255,80,120,.10); color:#FFD0D0; font-size:13px;}
+    .err.show{display:block;}
+    button{
+      border:0; cursor:pointer; border-radius:999px; padding:10px 14px; font-weight:800; color:#0B0F1A;
       background: linear-gradient(90deg, var(--yellow), var(--mint), var(--blue));
-      box-shadow: 0 14px 40px rgba(46,211,255,.18);
-    }
-
-    .btn:active{ transform: translateY(1px); }
-
-    .footer{
-      display:flex;
-      flex-wrap:wrap;
-      gap: 10px 14px;
-      align-items:center;
-      justify-content:space-between;
-      padding: 12px 14px;
-    }
-
-    .pill{
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.06);
-      padding: 8px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      color: var(--muted);
-      display:flex;
-      gap: 8px;
-      align-items:center;
-    }
-
-    .pill b{ color: var(--text); }
-
-    .tiny{
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .err{
-      color:#FFD0D0;
-      font-size: 13px;
-      padding: 10px 14px;
-      border-top: 1px solid var(--line);
-      background: rgba(255,80,120,.10);
-      display:none;
-    }
-
-    .err.show{ display:block; }
-
-    @media (max-width:520px){
-      .brand h1{ font-size:14px; }
-      .cta h2{ font-size:18px; }
-      .player{ aspect-ratio: 4 / 3; }
     }
   </style>
 </head>
-
 <body>
   <div class="wrap">
-    <div class="topbar">
-      <div class="brand">
+    <div class="bar">
+      <div class="title">
         <div class="dot"></div>
         <div>
-          <h1>Space Doodles Reel</h1>
-          <p class="sub">Continuous playlist • Vercel + /public/videos</p>
+          <div style="font-weight:800;">Space Doodles Reel</div>
+          <div style="font-size:12px;color:var(--muted);">Simple playlist player</div>
         </div>
       </div>
-
-      <div class="pill" id="statusPill">
-        <span>Now playing</span>
-        <b id="nowPlaying">—</b>
-      </div>
+      <button id="start">Start</button>
     </div>
 
     <div class="card">
       <div class="player">
-        <video id="video" playsinline preload="auto" controls>
-          <source id="videosource" type="video/mp4:>
+        <video id="v" playsinline preload="metadata" controls>
+          <source id="src" type="video/mp4" />
         </video>
-
-        <div class="overlay" id="overlay">
-          <div class="cta">
-            <h2>Tap to start the reel</h2>
-            <p>
-              Phones often block autoplay with sound.
-              Tap once to start, then it’ll play every clip back-to-back.
-            </p>
-            <button class="btn" id="startBtn">Play</button>
-            <div class="tiny">Tip: If you want autoplay, keep videos muted.</div>
-          </div>
-        </div>
       </div>
-
       <div class="footer">
-        <div class="pill">
-          <span>Clips</span> <b id="count">0</b>
-        </div>
-        <div class="pill">
-          <span>Mode</span> <b id="mode">Loop</b>
-        </div>
-        <div class="pill">
-          <span>Source</span> <b>/public/playlist.json</b>
-        </div>
+        <div class="pill">Clips: <b id="count">0</b></div>
+        <div class="pill">Now: <b id="now">—</b></div>
+        <div class="pill">Muted: <b id="muted">true</b></div>
       </div>
-
       <div class="err" id="err"></div>
-    </div>
-
-    <div class="tiny">
-      Update <b>public/playlist.json</b> and redeploy to change the order.
-      (Or if you’re using GitHub, just push a commit.)
     </div>
   </div>
 
   <script>
-    const video = document.getElementById('video');
-    const overlay = document.getElementById('overlay');
-    const startBtn = document.getElementById('startBtn');
-    const nowPlaying = document.getElementById('nowPlaying');
+    const v = document.getElementById('v');
+    const srcEl = document.getElementById('src');
+    const startBtn = document.getElementById('start');
     const countEl = document.getElementById('count');
+    const nowEl = document.getElementById('now');
+    const mutedEl = document.getElementById('muted');
     const errEl = document.getElementById('err');
 
     let list = [];
-    let idx = 0;
+    let i = 0;
     let started = false;
 
-    function showError(msg){
+    function showErr(msg){
       errEl.textContent = msg;
       errEl.classList.add('show');
       console.error(msg);
     }
-
-    function clearError(){
+    function clearErr(){
       errEl.textContent = '';
       errEl.classList.remove('show');
     }
-
-    function labelFor(path){
-      // show filename without folder
-      const parts = String(path).split('/');
-      return parts[parts.length - 1] || path;
+    function label(path){
+      const p = String(path).split('/');
+      return p[p.length - 1] || path;
     }
 
-    function playAt(i){
-     clearError();
-     if (!list.length) return;
-     idx = (i + list.length) % list.length;
+    async function loadPlaylist(){
+      const res = await fetch('/playlist.json', { cache: 'no-store' });
+      if (!res.ok) throw new Error(`playlist.json not found (HTTP ${res.status})`);
+      const data = await res.json();
+      if (!Array.isArray(data) || !data.length) throw new Error('playlist.json must be a non-empty JSON array.');
+      return data;
+    }
 
-     const src = list[idx];
-     nowPlaying.textContent = labelFor(src);
+    async function playIndex(idx, reason){
+      clearErr();
+      if (!list.length) return;
+      i = (idx + list.length) % list.length;
 
-     // Force absolute path (prevents relative path weirdness)
-     const abs = src.startsWith('/') ? src : `/${src}`;
+      const rel = list[i];
+      const url = rel.startsWith('/') ? rel : `/${rel}`;
 
-     video.pause();
-     video.removeAttribute('src'); // hard reset
-     video.load();
+      nowEl.textContent = label(rel);
 
-     document.getElementById("videosource").src = abs;
-     video.load();
+      // Hard reset source
+      v.pause();
+      srcEl.removeAttribute('src');
+      v.load();
 
-     const p = video.play();
-     if (p && typeof p.catch === 'function') {
-       p.catch(err => {
-        showError(`Play blocked/failed: ${err.name} - ${err.message}`);
+      srcEl.src = url;
+      v.load();
+
+      try {
+        const p = v.play();
+        if (p && p.catch) await p;
+      } catch (e) {
+        showErr(`Play failed (${reason}): ${e.name} - ${e.message}`);
+      }
+    }
+
+    v.addEventListener('ended', () => {
+      if (!started) return;
+      playIndex(i + 1, 'ended→next');
     });
-  }
-}
 
-
-    video.addEventListener('ended', () => {
-      // next clip
-      playAt(idx + 1);
+    v.addEventListener('error', () => {
+      const code = v.error?.code;
+      showErr(`Video error code=${code}. Source: ${srcEl.src || v.currentSrc || '(none)'}`);
     });
 
     startBtn.addEventListener('click', async () => {
       started = true;
 
-      // hide overlay immediately
-      overlay.style.display = "none";
-          
-      video.muted = false;
-      video.controls = true;
-      
-      playAt(idx);
+      // Click-to-play with audio should be allowed
+      v.muted = false;
+      mutedEl.textContent = String(v.muted);
+
+      await playIndex(i, 'button');
     });
 
-    // Click/tap anywhere on the video to start if blocked
-    video.addEventListener('click', () => {
-      if (!started && !overlay.classList.contains('hidden')) {
-        startBtn.click();
-      }
-    });
-
-    async function init(){
+    // Try muted autoplay on load (optional)
+    (async function init(){
       try {
-        // no-store so you see updates quickly after redeploy
-        const res = await fetch('/playlist.json', { cache: 'no-store' });
-        if (!res.ok) throw new Error(`Could not load playlist.json (HTTP ${res.status})`);
-        list = await res.json();
-
-        if (!Array.isArray(list) || !list.length) {
-          throw new Error('playlist.json must be a non-empty JSON array of video paths.');
-        }
-
+        list = await loadPlaylist();
         countEl.textContent = String(list.length);
 
-        // Try to autoplay muted (often works). If blocked, user taps Play.
-        video.muted = true;
-        playAt(0);
+        // preload first item, but don’t force audio
+        v.muted = true;
+        mutedEl.textContent = String(v.muted);
 
-        // If autoplay succeeds, hide overlay.
-        // Some browsers won't fire a reliable event here, so we wait a beat and check.
-        setTimeout(() => {
-          if (!video.paused) overlay.classList.add('hidden');
-        }, 500);
-
+        await playIndex(0, 'init-muted');
+        // If autoplay is blocked, user clicks Start.
       } catch (e) {
-        showError(e.message || String(e));
+        showErr(e.message || String(e));
       }
-    }
-
-    init();
-
-    video.addEventListener('error', () => {
-     const code = video.error?.code;
-     // 4 usually means codec not supported
-    showError(`Video error code=${code}. Source: ${video.src}`);
-    });
-
-    video.addEventListener('loadeddata', () => {
-      // Helpful confirmation that the browser decoded at least the first frame
-      console.log('Video loaded:', video.src);
-    });
-
-    
+    })();
   </script>
 </body>
 </html>
