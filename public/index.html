@@ -1,54 +1,77 @@
 <!DOCTYPE html>
-<html>
-<body style="margin:0;background:black;display:flex;align-items:center;justify-content:center;height:100vh;">
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<div style="position:relative;width:900px;height:506px">
+<title>Space Doodles Reel</title>
 
-<video id="v1" controls autoplay width="900" style="position:absolute;top:0;left:0"></video>
-<video id="v2" width="900" style="position:absolute;top:0;left:0;display:none"></video>
+<style>
 
+body{
+margin:0;
+height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+background:
+radial-gradient(circle at 20% 20%, #ff4fd8 0%, transparent 40%),
+radial-gradient(circle at 80% 30%, #2ed3ff 0%, transparent 40%),
+radial-gradient(circle at 50% 90%, #2bffb9 0%, transparent 40%),
+#0b0f1a;
+font-family:sans-serif;
+}
+
+.container{
+width:900px;
+max-width:92vw;
+text-align:center;
+}
+
+.title{
+color:white;
+font-size:22px;
+margin-bottom:12px;
+font-weight:bold;
+}
+
+video{
+width:100%;
+border-radius:16px;
+background:black;
+box-shadow:0 20px 60px rgba(0,0,0,0.5);
+}
+
+.info{
+color:#bbb;
+font-size:12px;
+margin-top:8px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="title">
+Space Doodles Continuous Reel
 </div>
 
-<script>
+<video controls autoplay loop playsinline>
 
-const videos = [
-"/videos/2215.mp4",
-"/videos/5421.mp4"
-];
+<source src="/reel.mp4" type="video/mp4">
 
-let index = 0;
+Your browser does not support the video tag.
 
-const v1 = document.getElementById("v1");
-const v2 = document.getElementById("v2");
+</video>
 
-let current = v1;
-let next = v2;
+<div class="info">
+Auto-generated reel • Oldest → Newest
+</div>
 
-current.src = videos[0];
-next.src = videos[1];
-
-current.play();
-
-current.onended = () => {
-
-  current.style.display = "none";
-  next.style.display = "block";
-
-  next.play();
-
-  const temp = current;
-  current = next;
-  next = temp;
-
-  index = (index + 1) % videos.length;
-
-  const upcoming = videos[(index + 1) % videos.length];
-
-  next.src = upcoming;
-
-};
-
-</script>
+</div>
 
 </body>
 </html>
