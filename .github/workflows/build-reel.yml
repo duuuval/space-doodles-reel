@@ -21,15 +21,15 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ffmpeg
 
-      - name: Build reel.mp4 from public/videos (oldest -> newest by filename)
+      - name: Build reel.mp4
         run: |
-          set -e
           mkdir -p public
-          # Create list in a temp file (so it doesn't show up as an untracked file)
-          ls -1 public/videos/*.mp4 | sort | sed "s|^|file '|;s|$|'|" > /tmp/videos.txt
 
-          # Force overwrite (-y) so it never prompts
-          ffmpeg -y -f concat -safe 0 -i /tmp/videos.txt -c copy public/reel.mp4
+          # Build concat list using correct relative paths
+          ls -1 public/videos/*.mp4 | sort | sed "s|^|file '|;s|$|'|" > videos.txt
+
+          ffmpeg -y -f concat -safe 0 -i videos.txt -c copy public/reel.mp4,
+
 
       - name: Commit reel.mp4 (only if changed)
         run: |
