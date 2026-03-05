@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Space Doodles Reel</title>
+  <meta name="description" content="A continuous reel of Space Doodles clips." />
+
+  <style>
+    :root{
+      /* Doodles-inspired bright candy colors (approx vibe) */
+      --pink: #FF4FD8;
+      --purple: #8B5CFF;
+      --blue: #2ED3FF;
+      --yellow:#FFE86B;
+      --mint: #2BFFB9;
+      --ink:  #0B0F1A;
+      --card: rgba(255,255,255,.10);
+      --line: rgba(255,255,255,.18);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.70);
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 22px;
+      background:
+        radial-gradient(900px 600px at 15% 15%, rgba(255,79,216,.35), transparent 60%),
+        radial-gradient(900px 600px at 85% 20%, rgba(46,211,255,.35), transparent 60%),
+        radial-gradient(900px 700px at 50% 95%, rgba(43,255,185,.28), transparent 62%),
+        linear-gradient(180deg, #0b0f1a 0%, #090b12 100%);
+      overflow-x:hidden;
+    }
+
+    .wrap{
+      width: min(980px, 100%);
+      display:grid;
+      gap: 14px;
+    }
+
+    .topbar{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    .brand{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      user-select:none;
+    }
+
+    .dot{
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      background: conic-gradient(from 180deg, var(--pink), var(--purple), var(--blue), var(--mint), var(--yellow), var(--pink));
+      box-shadow: 0 0 24px rgba(255,79,216,.25);
+    }
+
+    .brand h1{
+      margin:0;
+      font-size: 16px;
+      letter-spacing: .2px;
+      font-weight: 700;
+    }
+
+    .brand .sub{
+      margin:0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: 0 18px 60px rgba(0,0,0,.35);
+      overflow:hidden;
+      backdrop-filter: blur(12px);
+    }
+
+    .player{
+      position:relative;
+      aspect-ratio: 16 / 9;
+      background: rgba(0,0,0,.35);
+    }
+
+    video{
+      width:100%;
+      height:100%;
+      display:block;
+      object-fit:contain;
+      background:#000;
+    }
+
+    .overlay{
+      position:absolute;
+      inset: 0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      text-align:center;
+      background: linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.25));
+    }
+
+    .overlay.hidden{ display:none; }
+
+    .cta{
+      max-width: 520px;
+      display:grid;
+      gap: 10px;
+    }
+
+    .cta h2{
+      margin:0;
+      font-size: 20px;
+      line-height:1.2;
+    }
+
+    .cta p{
+      margin:0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height:1.35;
+    }
+
+    .btn{
+      border: 0;
+      cursor:pointer;
+      border-radius: 999px;
+      padding: 12px 16px;
+      font-weight: 800;
+      color: #0B0F1A;
+      background: linear-gradient(90deg, var(--yellow), var(--mint), var(--blue));
+      box-shadow: 0 14px 40px rgba(46,211,255,.18);
+    }
+
+    .btn:active{ transform: translateY(1px); }
+
+    .footer{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 10px 14px;
+      align-items:center;
+      justify-content:space-between;
+      padding: 12px 14px;
+    }
+
+    .pill{
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      color: var(--muted);
+      display:flex;
+      gap: 8px;
+      align-items:center;
+    }
+
+    .pill b{ color: var(--text); }
+
+    .tiny{
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .err{
+      color:#FFD0D0;
+      font-size: 13px;
+      padding: 10px 14px;
+      border-top: 1px solid var(--line);
+      background: rgba(255,80,120,.10);
+      display:none;
+    }
+
+    .err.show{ display:block; }
+
+    @media (max-width:520px){
+      .brand h1{ font-size:14px; }
+      .cta h2{ font-size:18px; }
+      .player{ aspect-ratio: 4 / 3; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="dot"></div>
+        <div>
+          <h1>Space Doodles Reel</h1>
+          <p class="sub">Continuous playlist • Vercel + /public/videos</p>
+        </div>
+      </div>
+
+      <div class="pill" id="statusPill">
+        <span>Now playing</span>
+        <b id="nowPlaying">—</b>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="player">
+        <video id="video" playsinline preload="metadata" controls></video>
+
+        <div class="overlay" id="overlay">
+          <div class="cta">
+            <h2>Tap to start the reel</h2>
+            <p>
+              Phones often block autoplay with sound.
+              Tap once to start, then it’ll play every clip back-to-back.
+            </p>
+            <button class="btn" id="startBtn">Play</button>
+            <div class="tiny">Tip: If you want autoplay, keep videos muted.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="pill">
+          <span>Clips</span> <b id="count">0</b>
+        </div>
+        <div class="pill">
+          <span>Mode</span> <b id="mode">Loop</b>
+        </div>
+        <div class="pill">
+          <span>Source</span> <b>/public/playlist.json</b>
+        </div>
+      </div>
+
+      <div class="err" id="err"></div>
+    </div>
+
+    <div class="tiny">
+      Update <b>public/playlist.json</b> and redeploy to change the order.
+      (Or if you’re using GitHub, just push a commit.)
+    </div>
+  </div>
+
+  <script>
+    const video = document.getElementById('video');
+    const overlay = document.getElementById('overlay');
+    const startBtn = document.getElementById('startBtn');
+    const nowPlaying = document.getElementById('nowPlaying');
+    const countEl = document.getElementById('count');
+    const errEl = document.getElementById('err');
+
+    let list = [];
+    let idx = 0;
+    let started = false;
+
+    function showError(msg){
+      errEl.textContent = msg;
+      errEl.classList.add('show');
+      console.error(msg);
+    }
+
+    function clearError(){
+      errEl.textContent = '';
+      errEl.classList.remove('show');
+    }
+
+    function labelFor(path){
+      // show filename without folder
+      const parts = String(path).split('/');
+      return parts[parts.length - 1] || path;
+    }
+
+    function playAt(i){
+      clearError();
+      if (!list.length) return;
+      idx = (i + list.length) % list.length;
+
+      const src = list[idx];
+      nowPlaying.textContent = labelFor(src);
+
+      // Important: set src then load to ensure it switches cleanly on some browsers
+      video.src = src;
+      video.load();
+
+      const p = video.play();
+      if (p && typeof p.catch === 'function') {
+        p.catch(() => {
+          // Autoplay blocked. Show overlay prompting user interaction.
+          overlay.classList.remove('hidden');
+        });
+      }
+    }
+
+    video.addEventListener('ended', () => {
+      // next clip
+      playAt(idx + 1);
+    });
+
+    startBtn.addEventListener('click', async () => {
+      started = true;
+      overlay.classList.add('hidden');
+      // If you want true autoplay, uncomment the next line (muted autoplay tends to work):
+      // video.muted = true;
+      playAt(idx);
+    });
+
+    // Click/tap anywhere on the video to start if blocked
+    video.addEventListener('click', () => {
+      if (!started && !overlay.classList.contains('hidden')) {
+        startBtn.click();
+      }
+    });
+
+    async function init(){
+      try {
+        // no-store so you see updates quickly after redeploy
+        const res = await fetch('/playlist.json', { cache: 'no-store' });
+        if (!res.ok) throw new Error(`Could not load playlist.json (HTTP ${res.status})`);
+        list = await res.json();
+
+        if (!Array.isArray(list) || !list.length) {
+          throw new Error('playlist.json must be a non-empty JSON array of video paths.');
+        }
+
+        countEl.textContent = String(list.length);
+
+        // Try to autoplay muted (often works). If blocked, user taps Play.
+        video.muted = true;
+        playAt(0);
+
+        // If autoplay succeeds, hide overlay.
+        // Some browsers won't fire a reliable event here, so we wait a beat and check.
+        setTimeout(() => {
+          if (!video.paused) overlay.classList.add('hidden');
+        }, 500);
+
+      } catch (e) {
+        showError(e.message || String(e));
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
