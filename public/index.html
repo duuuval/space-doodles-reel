@@ -307,9 +307,13 @@
 
     startBtn.addEventListener('click', async () => {
       started = true;
-      overlay.classList.add('hidden');
-      // If you want true autoplay, uncomment the next line (muted autoplay tends to work):
-      // video.muted = true;
+
+      // hide overlay immediately
+      overlay.style.display = "none";
+          
+      video.muted = false;
+      video.controls = true;
+      
       playAt(idx);
     });
 
