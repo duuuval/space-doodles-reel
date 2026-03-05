@@ -23,12 +23,17 @@ jobs:
 
       - name: Build reel.mp4
         run: |
-          mkdir -p public
+         set -e
+         ls -1 public/videos/*.mp4 | sort | sed "s|^|file '|;s|$|'|" > videos.txt
+         cat videos.txt
+         rm -f public/reel.mp4
 
-          # Build concat list using correct relative paths
-          ls -1 public/videos/*.mp4 | sort | sed "s|^|file '|;s|$|'|" > videos.txt
+         ffmpeg -y -f concat -safe 0 -i videos.txt \
+            -c:v libx264 -preset veryfast -crf 20 -pix_fmt yuv420p \
+            -c:a aac -b:a 192k \
+            -movflags +faststart \
+         public/reel.mp4
 
-          ffmpeg -y -f concat -safe 0 -i videos.txt -c copy public/reel.mp4,
 
 
       - name: Commit reel.mp4 (only if changed)
