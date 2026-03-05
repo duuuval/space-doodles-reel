@@ -4,6 +4,8 @@ A simple pipeline that automatically stitches Space Doodles clips into a single 
 
 Upload short video clips and they will automatically be merged into one continuous video and deployed to the site.
 
+Live site: https://space-doodles-reel.vercel.app/
+
 ---
 
 ## How it Works
