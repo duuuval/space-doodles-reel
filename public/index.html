@@ -214,7 +214,7 @@
 
     <div class="card">
       <div class="player">
-        <video id="video" playsinline preload="metadata" controls></video>
+        <video id="video" playsinline preload="auto" controls></video>
 
         <div class="overlay" id="overlay">
           <div class="cta">
@@ -280,25 +280,31 @@
     }
 
     function playAt(i){
-      clearError();
-      if (!list.length) return;
-      idx = (i + list.length) % list.length;
+     clearError();
+     if (!list.length) return;
+     idx = (i + list.length) % list.length;
 
-      const src = list[idx];
-      nowPlaying.textContent = labelFor(src);
+     const src = list[idx];
+     nowPlaying.textContent = labelFor(src);
 
-      // Important: set src then load to ensure it switches cleanly on some browsers
-      video.src = src;
-      video.load();
+     // Force absolute path (prevents relative path weirdness)
+     const abs = src.startsWith('/') ? src : `/${src}`;
 
-      const p = video.play();
-      if (p && typeof p.catch === 'function') {
-        p.catch(() => {
-          // Autoplay blocked. Show overlay prompting user interaction.
-          overlay.classList.remove('hidden');
-        });
-      }
-    }
+     video.pause();
+     video.removeAttribute('src'); // hard reset
+     video.load();
+
+     video.src = abs;
+     video.load();
+
+     const p = video.play();
+     if (p && typeof p.catch === 'function') {
+       p.catch(err => {
+        showError(`Play blocked/failed: ${err.name} - ${err.message}`);
+    });
+  }
+}
+
 
     video.addEventListener('ended', () => {
       // next clip
@@ -353,6 +359,19 @@
     }
 
     init();
+
+    video.addEventListener('error', () => {
+     const code = video.error?.code;
+     // 4 usually means codec not supported
+    showError(`Video error code=${code}. Source: ${video.src}`);
+    });
+
+    video.addEventListener('loadeddata', () => {
+      // Helpful confirmation that the browser decoded at least the first frame
+      console.log('Video loaded:', video.src);
+    });
+
+    
   </script>
 </body>
 </html>
