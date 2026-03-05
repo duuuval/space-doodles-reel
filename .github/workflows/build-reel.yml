@@ -5,7 +5,8 @@ permissions:
 
 on:
   push:
-    # Run on any push (keeps it simple / reliable)
+    paths:
+     - "public/videos/*.mp4"
   workflow_dispatch:
 
 jobs:
