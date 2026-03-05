@@ -1,5 +1,8 @@
 name: Build Reel
 
+permissions:
+ contents: write
+ 
 on:
   push:
   workflow_dispatch:
