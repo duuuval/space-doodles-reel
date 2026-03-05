@@ -29,6 +29,7 @@
         background-repeat: no-repeat;
         filter: saturate(1.05) contrast(1.05);
         transform: scale(1.02); /* tiny scale to avoid edge gaps */
+        z-index: 0;
       }
 
       /* Soft overlay for readability + vibe */
@@ -41,6 +42,7 @@
           radial-gradient(1200px 800px at 80% 30%, rgba(0, 230, 255, 0.16), transparent 60%),
           linear-gradient(to bottom, rgba(0,0,0,.35), rgba(0,0,0,.55));
         pointer-events: none;
+        z-index: 1;
       }
 
       /* Centered player */
@@ -65,6 +67,7 @@
           0 24px 80px rgba(0,0,0,.55),
           0 0 0 1px rgba(255,255,255,.10);
         outline: none;
+        backdrop-filter: blur(2px);
       }
 
       /* If the video is vertical (some clips might be), let it fit nicely */
