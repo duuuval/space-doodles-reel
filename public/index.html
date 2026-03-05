@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title>Space Doodles Reel</title>
-</head>
-
 <body style="margin:0;background:black;display:flex;align-items:center;justify-content:center;height:100vh;">
 
-<video id="player" controls autoplay muted width="900">
-  <source src="/videos/2215.mp4" type="video/mp4">
-</video>
+<div style="position:relative;width:900px">
+
+<video id="v1" autoplay muted width="900" style="position:absolute"></video>
+<video id="v2" muted width="900" style="position:absolute"></video>
+
+</div>
 
 <script>
 
@@ -18,13 +17,38 @@ const videos = [
 ];
 
 let i = 0;
-const player = document.getElementById("player");
 
-player.onended = () => {
+const v1 = document.getElementById("v1");
+const v2 = document.getElementById("v2");
+
+let active = v1;
+let preload = v2;
+
+active.src = videos[0];
+preload.src = videos[1];
+
+active.play();
+
+active.onended = switchVideo;
+
+function switchVideo(){
+
+  const temp = active;
+  active = preload;
+  preload = temp;
+
+  active.style.zIndex = 1;
+  preload.style.zIndex = 0;
+
+  active.play();
+
   i = (i + 1) % videos.length;
-  player.src = videos[i];
-  player.play();
-};
+
+  const next = videos[(i + 1) % videos.length];
+
+  preload.src = next;
+
+}
 
 </script>
 
