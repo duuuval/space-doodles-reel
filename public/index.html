@@ -214,7 +214,9 @@
 
     <div class="card">
       <div class="player">
-        <video id="video" playsinline preload="auto" controls></video>
+        <video id="video" playsinline preload="auto" controls>
+          <source id="videosource" type="video/mp4:>
+        </video>
 
         <div class="overlay" id="overlay">
           <div class="cta">
@@ -294,7 +296,7 @@
      video.removeAttribute('src'); // hard reset
      video.load();
 
-     video.src = abs;
+     document.getElementById("videosource").src = abs;
      video.load();
 
      const p = video.play();
