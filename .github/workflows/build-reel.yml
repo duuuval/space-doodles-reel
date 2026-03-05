@@ -16,6 +16,11 @@ jobs:
         run: |
           ls public/videos/*.mp4 | sed "s/^/file '/;s/$/'/" > videos.txt
 
+      - name: Install ffmpeg
+        run: |
+          sudo apt update
+          sudo apt install -y ffmpeg
+      
       - name: Merge videos
         run: |
           ffmpeg -f concat -safe 0 -i videos.txt -c copy public/reel.mp4
